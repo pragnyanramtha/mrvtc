@@ -25,7 +25,7 @@ export default function StatsChart({ data }: StatsChartProps) {
     const chartData = data
         .filter((item) => item.total && !isNaN(Number(item.total)))
         .map((item) => ({
-            subject: item.course.replace(/\(.*\)/, "").substring(0, 15) + "...", // Truncate long names
+            subject: getShortName(item.course),
             fullSubject: item.course,
             marks: Number(item.total),
             grade: item.grade,
@@ -75,4 +75,26 @@ export default function StatsChart({ data }: StatsChartProps) {
             </ResponsiveContainer>
         </div>
     );
+}
+
+function getShortName(course: string): string {
+    const map: Record<string, string> = {
+        "MATHEMATICS FOR COMPUTING": "MATHS",
+        "COMPUTER AIDED ENGINEERING GRAPHICS": "CAEG",
+        "PROFESSIONAL SKILLS FOR ENGINEERS": "PRO SKILLS",
+        "COMPUTER PROGRAMMING": "PROG",
+        "WEB APPLICATION DEVELOPMENT-1": "WEB DEV",
+        "QUANTITATIVE SKILLS": "QUANT",
+        "INDIAN KNOWLEDGE SYSTEM": "IKS",
+        "GERMAN": "GERMAN"
+    };
+
+    const cleanName = course.replace(/\(.*\)/, "").trim();
+    if (map[cleanName]) return map[cleanName];
+
+    // Fallback: Acronym for long names, or first word
+    if (cleanName.length > 15) {
+        return cleanName.split(" ").map(w => w[0]).join("");
+    }
+    return cleanName;
 }

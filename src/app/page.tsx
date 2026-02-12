@@ -45,19 +45,19 @@ export default function Home() {
       {/* Grid Background Effect */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[length:50px_50px] opacity-10 pointer-events-none" />
 
-      <div className="container mx-auto px-4 py-20 flex flex-col items-center min-h-[80vh]">
+      <div className="container mx-auto px-4 py-10 md:py-20 flex flex-col items-center min-h-[80vh]">
 
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16 space-y-4"
+          className="text-center mb-12 md:mb-16 space-y-4"
         >
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
-            SEM 2 RESULTS '
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
+            SEM 2 RESULTS
           </h1>
-          <div className="h-1 w-24 bg-cyan-500 mx-auto rounded-full" />
+          <div className="h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
         </motion.div>
 
         {/* Search Bar */}
@@ -66,24 +66,24 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           onSubmit={handleSearch}
-          className="w-full max-w-md relative group z-10"
+          className="w-full max-w-lg relative group z-10"
         >
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl opacity-30 group-hover:opacity-100 transition duration-500 blur-md group-focus-within:opacity-100 group-focus-within:blur-lg" />
-          <div className="relative flex items-center bg-black rounded-xl border border-slate-800 focus-within:border-cyan-500/50 transition-colors shadow-2xl">
-            <Search className="h-5 w-5 text-slate-500 ml-4" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 rounded-2xl opacity-30 group-hover:opacity-100 transition duration-500 blur-lg group-focus-within:opacity-100 group-focus-within:blur-xl" />
+          <div className="relative flex items-center bg-black/90 backdrop-blur-xl rounded-2xl border border-slate-800 focus-within:border-cyan-500/50 transition-colors shadow-2xl">
+            <Search className="h-6 w-6 text-slate-500 ml-5" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter Roll Number (e.g. 25MVCSDR0548)"
-              className="w-full bg-transparent px-4 py-4 text-white placeholder-slate-600 focus:outline-none focus:ring-0 tracking-widest font-mono uppercase"
+              placeholder="ENTER ROLL NUMBER"
+              className="w-full bg-transparent px-5 py-5 text-lg md:text-xl text-white placeholder-slate-600 focus:outline-none focus:ring-0 tracking-widest font-mono uppercase"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="absolute right-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors border border-slate-800"
+              className="absolute right-3 px-4 md:px-6 py-2 md:py-3 bg-slate-900 hover:bg-slate-800 hover:text-cyan-300 text-cyan-400 text-xs md:text-sm font-bold uppercase tracking-wider rounded-xl transition-all border border-slate-800 hover:border-cyan-500/30 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]"
             >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "ANALYZE"}
+              {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "CHECK RESULTS"}
             </button>
           </div>
         </motion.form>
