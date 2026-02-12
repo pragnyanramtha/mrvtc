@@ -55,7 +55,7 @@ export default function Home() {
           className="text-center mb-12 md:mb-16 space-y-4"
         >
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
-            SEM 2 RESULTS '
+            SEM 1 RESULTS '
           </h1>
           <div className="h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
         </motion.div>
