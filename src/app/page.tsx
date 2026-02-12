@@ -28,11 +28,7 @@ export default function Home() {
         // Extract the array from the dynamic key
         const keys = Object.keys(result.data);
         if (keys.length > 0) {
-          const rawData = result.data[keys[0]];
-          const filteredData = rawData.filter(item =>
-            !["PROFESSIONAL SKILLS FOR ENGINEERS", "INDIAN KNOWLEDGE SYSTEM"].includes(item.course.trim())
-          );
-          setData(filteredData);
+          setData(result.data[keys[0]]);
         } else {
           setError("No data found for this roll number.");
         }
@@ -122,29 +118,59 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="w-full flex flex-col md:flex-row justify-between items-end border-b border-cyan-500/30 pb-4 mb-8"
+                className="w-full mb-12"
               >
-                <div className="text-left">
-                  <div className="text-xs text-cyan-500/70 font-mono tracking-widest uppercase mb-1">Target</div>
-                  <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic">
-                    {data[0]?.rollNo}
-                  </h2>
+                {/* Top Row: Identity */}
+                <div className="flex flex-col md:flex-row justify-between items-end border-b border-cyan-500/30 pb-4 mb-6">
+                  <div className="text-left">
+                    <div className="text-xs text-cyan-500/70 font-mono tracking-widest uppercase mb-1">IDENTITY</div>
+                    <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
+                      {data[0]?.rollNo}
+                    </h2>
+                  </div>
+                  <div className="text-right mt-4 md:mt-0">
+                    <span className="bg-cyan-950/30 border border-cyan-500/30 px-4 py-1 rounded-full text-cyan-400 font-mono text-sm uppercase tracking-wider">
+                      Batch: {data[0]?.batch}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex gap-6 text-right mt-4 md:mt-0">
-                  <div>
-                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">Batch</div>
-                    <div className="text-xl font-bold text-white font-mono">{data[0]?.batch}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">SGPA</div>
-                    <div className="text-xl font-bold text-emerald-400 font-mono">{data[0]?.sgpa}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">Status</div>
-                    <div className="text-xl font-bold text-cyan-400 font-mono uppercase">{data[0]?.status}</div>
-                  </div>
-                </div>
+                {/* calculated metrics */}
+                {(() => {
+                  const totalCredits = data.reduce((acc, curr) => acc + (Number(curr.credits) || 0), 0);
+                  const dueSubjects = data.filter(item => item.status !== "Pass").length;
+                  const cgpa = data[0]?.cgpa || "N/A";
+
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                          <div className="w-16 h-16 rounded-full border-4 border-emerald-500" />
+                        </div>
+                        <div className="text-sm text-slate-400 font-mono uppercase tracking-widest mb-2">Final CGPA</div>
+                        <div className="text-4xl font-bold text-emerald-400 font-mono">{cgpa}</div>
+                      </div>
+
+                      <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                          <div className="w-16 h-16 rounded-full border-4 border-blue-500" />
+                        </div>
+                        <div className="text-sm text-slate-400 font-mono uppercase tracking-widest mb-2">Total Credits</div>
+                        <div className="text-4xl font-bold text-blue-400 font-mono">{totalCredits}</div>
+                      </div>
+
+                      <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                          <div className="w-16 h-16 rounded-full border-4 border-red-500" />
+                        </div>
+                        <div className="text-sm text-slate-400 font-mono uppercase tracking-widest mb-2">Due Subjects</div>
+                        <div className={`text-4xl font-bold font-mono ${dueSubjects > 0 ? "text-red-500" : "text-slate-500"}`}>
+                          {dueSubjects}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </motion.div>
 
               <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-8">
@@ -158,12 +184,21 @@ export default function Home() {
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50" />
 
                   <div className="w-full relative z-10">
-                    <StatsChart data={data} />
+                    {/* Header for Chart */}
+                    <h3 className="text-center text-cyan-400 font-mono uppercase tracking-widest mb-4 text-sm border-b border-cyan-900/30 pb-2 mx-10">
+                      Performance
+                    </h3>
+                    <StatsChart data={data.filter(item =>
+                      !["GERMAN", "INDIAN KNOWLEDGE SYSTEM"].includes(item.course)
+                    )} />
                   </div>
                 </div>
 
                 {/* Right Column: The Data Grid */}
                 <div className="xl:col-span-7">
+                  <h3 className="text-left text-cyan-400 font-mono uppercase tracking-widest mb-4 text-sm border-b border-cyan-900/30 pb-2">
+                    Subject Breakdown
+                  </h3>
                   <StatsGrid data={data} />
                 </div>
 

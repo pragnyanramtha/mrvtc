@@ -8,7 +8,13 @@ interface StatsGridProps {
 }
 
 export default function StatsGrid({ data }: StatsGridProps) {
-    const sortedData = [...data].sort((a, b) => b.total.localeCompare(a.total)); // Sort by score descending
+    // Sort by grade points high to low, then by total marks high to low
+    const sortedData = [...data].sort((a, b) => {
+        const gpA = Number(a.gradePoints) || 0;
+        const gpB = Number(b.gradePoints) || 0;
+        if (gpB !== gpA) return gpB - gpA;
+        return (Number(b.total) || 0) - (Number(a.total) || 0);
+    });
 
     const container = {
         hidden: { opacity: 0 },
@@ -51,9 +57,6 @@ export default function StatsGrid({ data }: StatsGridProps) {
                                 {result.course}
                             </h3>
                         </div>
-                        <div className={`text-2xl font-black italic ${getGradeColor(result.grade)}`}>
-                            {result.grade}
-                        </div>
                     </div>
 
                     <div className="w-full bg-slate-800 h-1 mt-4 mb-4 relative overflow-hidden">
@@ -65,22 +68,36 @@ export default function StatsGrid({ data }: StatsGridProps) {
                         />
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 relative z-10 font-mono">
-                        <div className="bg-slate-800/50 rounded p-1.5 text-center">
-                            <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">Int</div>
-                            <div className="text-sm font-bold text-slate-300">{result.internalMarks}</div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10 font-mono mt-4">
+                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Internal</span>
+                            <span className="text-lg font-bold text-slate-200">{result.internalMarks}</span>
                         </div>
-                        <div className="bg-slate-800/50 rounded p-1.5 text-center">
-                            <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">Ext</div>
-                            <div className="text-sm font-bold text-slate-300">{result.externalMarks}</div>
+                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">External</span>
+                            <span className="text-lg font-bold text-slate-200">{result.externalMarks}</span>
                         </div>
-                        <div className="bg-slate-800/50 rounded p-1.5 text-center">
-                            <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">Crd</div>
-                            <div className="text-sm font-bold text-slate-300">{result.credits}</div>
+                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total</span>
+                            <span className="text-lg font-bold text-white">{result.total}</span>
                         </div>
-                        <div className="bg-slate-800/50 rounded p-1.5 text-center border border-cyan-500/20">
-                            <div className="text-[9px] text-cyan-500 uppercase tracking-wider mb-0.5">Tot</div>
-                            <div className="text-sm font-bold text-white">{result.total}</div>
+                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Credits</span>
+                            <span className="text-lg font-bold text-blue-400">{result.credits}</span>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center relative z-10">
+                        <div className="flex items-center gap-2">
+                            <div className={`px-2 py-0.5 rounded textxs font-bold uppercase tracking-wider ${result.status === "Pass" ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"}`}>
+                                {result.status}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-xs text-slate-500 mr-2 uppercase tracking-wider">Grade</span>
+                            <span className={`text-2xl font-black italic ${getGradeColor(result.grade)}`}>
+                                {result.grade}
+                            </span>
                         </div>
                     </div>
                 </motion.div>
