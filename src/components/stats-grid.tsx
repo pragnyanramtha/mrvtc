@@ -79,7 +79,11 @@ export default function StatsGrid({ data }: StatsGridProps) {
                         </div>
                         <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
                             <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total</span>
-                            <span className="text-lg font-bold text-white">{result.total}</span>
+                            <span className="text-lg font-bold text-white">
+                                {["GERMAN", "INDIAN KNOWLEDGE SYSTEM"].includes(result.course) 
+                                    ? "100" 
+                                    : result.total}
+                            </span>
                         </div>
                         <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
                             <span className="text-[10px] text-slate-500 uppercase tracking-wider">Credits</span>
