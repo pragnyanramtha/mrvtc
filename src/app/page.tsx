@@ -1,65 +1,179 @@
-import Image from "next/image";
+"use client";
+
+import { useTransition } from "react";
+import { useState } from "react";
+import { getSemWiseData } from "@/actions/get-sem-wise-data";
+import { StudentResult } from "@/types";
+import { Search, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import StatsChart from "@/components/stats-chart";
+import StatsGrid from "@/components/stats-grid";
 
 export default function Home() {
+  const [query, setQuery] = useState("");
+  const [data, setData] = useState<StudentResult[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query) return;
+
+    setError(null);
+    setData(null);
+
+    startTransition(async () => {
+      const result = await getSemWiseData(query);
+      if (result.success && result.data) {
+        // Extract the array from the dynamic key
+        const keys = Object.keys(result.data);
+        if (keys.length > 0) {
+          const rawData = result.data[keys[0]];
+          const filteredData = rawData.filter(item =>
+            !["PROFESSIONAL SKILLS FOR ENGINEERS", "INDIAN KNOWLEDGE SYSTEM"].includes(item.course.trim())
+          );
+          setData(filteredData);
+        } else {
+          setError("No data found for this roll number.");
+        }
+      } else {
+        setError(result.error || "Failed to fetch data.");
+      }
+    });
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-black to-black -z-10" />
+
+      {/* Grid Background Effect */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[length:50px_50px] opacity-10 pointer-events-none" />
+
+      <div className="container mx-auto px-4 py-20 flex flex-col items-center min-h-[80vh]">
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16 space-y-4"
+        >
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
+            SEM 2 RESULTS '
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+          <div className="h-1 w-24 bg-cyan-500 mx-auto rounded-full" />
+        </motion.div>
+
+        {/* Search Bar */}
+        <motion.form
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          onSubmit={handleSearch}
+          className="w-full max-w-md relative group z-10"
+        >
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl opacity-30 group-hover:opacity-100 transition duration-500 blur-md group-focus-within:opacity-100 group-focus-within:blur-lg" />
+          <div className="relative flex items-center bg-black rounded-xl border border-slate-800 focus-within:border-cyan-500/50 transition-colors shadow-2xl">
+            <Search className="h-5 w-5 text-slate-500 ml-4" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Enter Roll Number (e.g. 25MVCSDR0548)"
+              className="w-full bg-transparent px-4 py-4 text-white placeholder-slate-600 focus:outline-none focus:ring-0 tracking-widest font-mono uppercase"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="absolute right-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors border border-slate-800"
+            >
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "ANALYZE"}
+            </button>
+          </div>
+        </motion.form>
+
+        {/* Error Message */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-red-400 mt-6 bg-red-950/20 border border-red-900/50 px-6 py-3 rounded-lg text-sm font-mono"
+            >
+              ERROR: {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Results Section */}
+        <AnimatePresence>
+          {data && !isPending && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="w-full mt-20"
+            >
+
+              {/* Header Info - HUD Style */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="w-full flex flex-col md:flex-row justify-between items-end border-b border-cyan-500/30 pb-4 mb-8"
+              >
+                <div className="text-left">
+                  <div className="text-xs text-cyan-500/70 font-mono tracking-widest uppercase mb-1">Target</div>
+                  <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic">
+                    {data[0]?.rollNo}
+                  </h2>
+                </div>
+
+                <div className="flex gap-6 text-right mt-4 md:mt-0">
+                  <div>
+                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">Batch</div>
+                    <div className="text-xl font-bold text-white font-mono">{data[0]?.batch}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">SGPA</div>
+                    <div className="text-xl font-bold text-emerald-400 font-mono">{data[0]?.sgpa}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-cyan-500/70 font-mono tracking-widest uppercase">Status</div>
+                    <div className="text-xl font-bold text-cyan-400 font-mono uppercase">{data[0]?.status}</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+                {/* Left Column: The Hexagon */}
+                <div className="xl:col-span-5 flex flex-col items-center justify-center relative bg-slate-900/20 border border-slate-800/50 rounded-none p-4 backdrop-blur-sm shadow-[0_0_50px_-12px_rgba(6,182,212,0.15)]">
+                  {/* Decorative corners */}
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-500/50" />
+                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-500/50" />
+                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-500/50" />
+                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50" />
+
+                  <div className="w-full relative z-10">
+                    <StatsChart data={data} />
+                  </div>
+                </div>
+
+                {/* Right Column: The Data Grid */}
+                <div className="xl:col-span-7">
+                  <StatsGrid data={data} />
+                </div>
+
+              </div>
+
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+      </div>
+    </main>
   );
 }
