@@ -8,7 +8,6 @@ interface StatsGridProps {
 }
 
 export default function StatsGrid({ data }: StatsGridProps) {
-    // Sort by grade points high to low, then by total marks high to low
     const sortedData = [...data].sort((a, b) => {
         const gpA = Number(a.gradePoints) || 0;
         const gpB = Number(b.gradePoints) || 0;
@@ -20,9 +19,7 @@ export default function StatsGrid({ data }: StatsGridProps) {
         hidden: { opacity: 0 },
         show: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.05,
-            },
+            transition: { staggerChildren: 0.05 },
         },
     };
 
@@ -44,10 +41,11 @@ export default function StatsGrid({ data }: StatsGridProps) {
                     variants={item}
                     className="relative bg-slate-900 border border-slate-800 p-4 transition-all hover:bg-slate-800/50 hover:border-cyan-500/30 group overflow-hidden"
                 >
-                    {/* Tech details */}
+                    {/* Corner accents */}
                     <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-slate-700/50 group-hover:border-cyan-400 transition-colors" />
                     <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-slate-700/50 group-hover:border-cyan-400 transition-colors" />
 
+                    {/* Subject header */}
                     <div className="flex justify-between items-start mb-2 relative z-10">
                         <div>
                             <div className="text-[10px] text-cyan-600 font-mono tracking-widest uppercase mb-1">
@@ -59,6 +57,7 @@ export default function StatsGrid({ data }: StatsGridProps) {
                         </div>
                     </div>
 
+                    {/* Progress bar */}
                     <div className="w-full bg-slate-800 h-1 mt-4 mb-4 relative overflow-hidden">
                         <motion.div
                             initial={{ width: 0 }}
@@ -68,39 +67,48 @@ export default function StatsGrid({ data }: StatsGridProps) {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10 font-mono mt-4">
+                    {/* Mid 1 | Mid 2 | Regular | Total */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 relative z-10 font-mono mt-4">
                         <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
-                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Internal</span>
-                            <span className="text-lg font-bold text-slate-200">{result.internalMarks}</span>
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Mid 1</span>
+                            <span className="text-lg font-bold text-slate-200">{result.mid1Marks ?? '—'}</span>
                         </div>
                         <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
-                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">External</span>
-                            <span className="text-lg font-bold text-slate-200">{result.externalMarks}</span>
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Mid 2</span>
+                            <span className="text-lg font-bold text-slate-200">{result.mid2Marks ?? '—'}</span>
+                        </div>
+                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Regular</span>
+                            <span className="text-lg font-bold text-slate-400">
+                                {result.externalMarks && result.externalMarks !== '0' ? result.externalMarks : '—'}
+                            </span>
                         </div>
                         <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
                             <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total</span>
                             <span className="text-lg font-bold text-white">
-                                {["GERMAN", "INDIAN KNOWLEDGE SYSTEM"].includes(result.course) 
-                                    ? "100" 
-                                    : result.total}
+                                {result.total}
                             </span>
-                        </div>
-                        <div className="flex flex-col bg-slate-900/50 p-2 rounded border border-slate-700/50">
-                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Credits</span>
-                            <span className="text-lg font-bold text-blue-400">{result.credits}</span>
                         </div>
                     </div>
 
+                    {/* Footer: Status + Grade */}
                     <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center relative z-10">
                         <div className="flex items-center gap-2">
-                            <div className={`px-2 py-0.5 rounded textxs font-bold uppercase tracking-wider ${result.status === "Pass" ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"}`}>
-                                {result.status}
+                            <div className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
+                                (result.status === "Pass" || result.status === "P")
+                                    ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                    : result.status
+                                        ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                                        : "bg-slate-800/50 text-slate-500 border border-slate-700"
+                            }`}>
+                                {result.status || 'Pending'}
                             </div>
+                            <span className="text-xs text-slate-600 font-mono">{result.credits} cr</span>
                         </div>
                         <div className="text-right">
                             <span className="text-xs text-slate-500 mr-2 uppercase tracking-wider">Grade</span>
                             <span className={`text-2xl font-black italic ${getGradeColor(result.grade)}`}>
-                                {result.grade}
+                                {result.grade || '—'}
                             </span>
                         </div>
                     </div>
