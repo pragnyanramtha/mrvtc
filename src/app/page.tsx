@@ -130,11 +130,14 @@ export default function Home() {
   const currentRollNo = sem1Data?.[0]?.rollNo ?? sem2Data?.[0]?.rollNo ?? "";
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-black to-black -z-10" />
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[length:50px_50px] opacity-10 pointer-events-none" />
+    <main className="results-shell min-h-screen text-white font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
+      <div className="results-bg" aria-hidden="true">
+        <div className="results-bg__circuit" />
+        <div className="results-bg__horizon" />
+        <div className="results-bg__scan" />
+      </div>
 
-      <div className="container mx-auto px-4 py-10 md:py-20 flex flex-col items-center min-h-[80vh]">
+      <div className="container mx-auto px-4 py-10 md:py-20 flex flex-col items-center min-h-[80vh] relative z-10">
 
         {/* Header */}
         <motion.div
@@ -143,8 +146,8 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="text-center mb-10 md:mb-16 space-y-4"
         >
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
-            MRVTC RESULTS
+          <h1 className="inline-block px-3 md:px-5 text-5xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 italic uppercase drop-shadow-2xl">
+            TEST RESULTS
           </h1>
           <div className="h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
         </motion.div>
