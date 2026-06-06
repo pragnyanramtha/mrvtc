@@ -42,7 +42,7 @@ export async function getSemWiseData(rollNo: string) {
         const calculatedCgpa = totalCredits > 0 ? (totalGradePoints / totalCredits).toFixed(2) : "0.00";
 
         const mappedData = rows.map(row => ({
-            batch: "2024",
+            batch: "2025",
             insertedDate: new Date().toISOString(),
             degree: "Major",
             branch: "Unknown",

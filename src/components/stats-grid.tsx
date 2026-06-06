@@ -9,10 +9,15 @@ interface StatsGridProps {
 
 export default function StatsGrid({ data }: StatsGridProps) {
     const sortedData = [...data].sort((a, b) => {
-        const gpA = Number(a.gradePoints) || 0;
-        const gpB = Number(b.gradePoints) || 0;
-        if (gpB !== gpA) return gpB - gpA;
-        return (Number(b.total) || 0) - (Number(a.total) || 0);
+        const rankA = getBottomSubjectRank(a.course);
+        const rankB = getBottomSubjectRank(b.course);
+        if (rankA !== rankB) return rankA - rankB;
+
+        const marksA = Number(a.total) || Number(a.totalMarks) || 0;
+        const marksB = Number(b.total) || Number(b.totalMarks) || 0;
+        if (marksB !== marksA) return marksB - marksA;
+
+        return a.courseCode.localeCompare(b.courseCode);
     });
 
     const container = {
@@ -140,4 +145,11 @@ function getBarColor(grade: string | null) {
     if (g.includes("B")) return "bg-cyan-500";
     if (g === "F") return "bg-red-600";
     return "bg-slate-500";
+}
+
+function getBottomSubjectRank(courseName: string) {
+    const normalized = courseName.toLowerCase();
+    if (normalized.includes("employment")) return 1;
+    if (normalized.includes("french")) return 2;
+    return 0;
 }

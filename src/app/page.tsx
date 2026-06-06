@@ -7,11 +7,8 @@ import { searchStudents, StudentSuggestion } from "@/actions/search-students";
 import { StudentResult, Sem2Result } from "@/types";
 import { Search, Loader2, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import StatsChart from "@/components/stats-chart";
 import StatsGrid from "@/components/stats-grid";
 import Sem2StatsGrid from "@/components/sem2-stats-grid";
-
-type ActiveSem = "sem1" | "sem2";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -24,7 +21,6 @@ export default function Home() {
   const [sem2Data, setSem2Data] = useState<Sem2Result[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [activeSem, setActiveSem] = useState<ActiveSem>("sem1");
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -73,7 +69,6 @@ export default function Home() {
     setSem1Data(null);
     setSem2Data(null);
     setShowDropdown(false);
-    setActiveSem("sem1");
 
     startTransition(async () => {
       const [sem1Result, sem2Result] = await Promise.all([
@@ -262,7 +257,7 @@ export default function Home() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="w-full mt-12 md:mt-20"
             >
-              {/* Identity + Sem Selector */}
+              {/* Identity + Unified Summary */}
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-cyan-500/30 pb-4 mb-5 gap-3">
                   <div>
@@ -278,81 +273,15 @@ export default function Home() {
                     </h2>
                   </div>
                   <span className="bg-cyan-950/30 border border-cyan-500/30 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs uppercase tracking-wider whitespace-nowrap">
-                    Batch: 2024
+                    Batch: 2025
                   </span>
                 </div>
 
-                {/* Sem Switcher */}
-                <div className="flex gap-2 mb-5">
-                  <button
-                    onClick={() => setActiveSem("sem1")}
-                    disabled={!sem1Data}
-                    className={`relative px-4 py-2 font-mono text-xs uppercase tracking-widest transition-all duration-300 border ${
-                      activeSem === "sem1"
-                        ? "bg-cyan-500/15 border-cyan-500/60 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)]"
-                        : "bg-slate-900/50 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600"
-                    } ${!sem1Data ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-                  >
-                    {activeSem === "sem1" && (
-                      <span className="absolute top-0 left-0 right-0 h-[2px] bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                    )}
-                    SEM I
-                  </button>
-                  <button
-                    onClick={() => setActiveSem("sem2")}
-                    disabled={!sem2Data}
-                    className={`relative px-4 py-2 font-mono text-xs uppercase tracking-widest transition-all duration-300 border ${
-                      activeSem === "sem2"
-                        ? "bg-amber-500/15 border-amber-500/60 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
-                        : "bg-slate-900/50 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600"
-                    } ${!sem2Data ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-                  >
-                    {activeSem === "sem2" && (
-                      <span className="absolute top-0 left-0 right-0 h-[2px] bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-                    )}
-                    SEM II
-                    {!sem2Data && sem1Data && (
-                      <span className="ml-1 text-[9px] text-slate-600 normal-case">no data</span>
-                    )}
-                  </button>
-                </div>
-
-                {/* Metrics */}
-                {activeSem === "sem1" && sem1Data && <Sem1Metrics data={sem1Data} />}
-                {activeSem === "sem2" && sem2Data && <Sem2Metrics data={sem2Data} />}
+                <UnifiedMetrics sem1Data={sem1Data} sem2Data={sem2Data} />
               </motion.div>
 
-              {/* ── SEM 1 ── */}
-              {activeSem === "sem1" && sem1Data && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8"
-                >
-                  <div className="xl:col-span-5 relative bg-slate-900/20 border border-slate-800/50 p-4 backdrop-blur-sm shadow-[0_0_50px_-12px_rgba(6,182,212,0.15)]">
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-500/50" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-500/50" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-500/50" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50" />
-                    <h3 className="text-center text-cyan-400 font-mono uppercase tracking-widest mb-4 text-xs border-b border-cyan-900/30 pb-2 mx-6">
-                      Performance
-                    </h3>
-                    <StatsChart data={sem1Data.filter(item =>
-                      !["GERMAN", "INDIAN KNOWLEDGE SYSTEM"].includes(item.course)
-                    )} />
-                  </div>
-
-                  <div className="xl:col-span-7">
-                    <h3 className="text-cyan-400 font-mono uppercase tracking-widest mb-4 text-xs border-b border-cyan-900/30 pb-2">
-                      Subject Breakdown
-                    </h3>
-                    <StatsGrid data={sem1Data} />
-                  </div>
-                </motion.div>
-              )}
-
               {/* ── SEM 2 ── */}
-              {activeSem === "sem2" && sem2Data && (
+              {sem2Data && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -360,13 +289,24 @@ export default function Home() {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
                     <h3 className="text-amber-400 font-mono uppercase tracking-widest text-xs border-b border-amber-900/30 pb-2 flex-1">
-                      Sem 2 — Subject Breakdown
+                      Sem II — Marks Breakdown
                     </h3>
-                    <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">
-                      Tap a card for details
-                    </span>
                   </div>
                   <Sem2StatsGrid data={sem2Data} />
+                </motion.div>
+              )}
+
+              {/* ── SEM 1 ── */}
+              {sem1Data && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="w-full mt-10 md:mt-12"
+                >
+                  <h3 className="text-cyan-400 font-mono uppercase tracking-widest mb-4 text-xs border-b border-cyan-900/30 pb-2">
+                    Sem I — Marks Breakdown
+                  </h3>
+                  <StatsGrid data={sem1Data} />
                 </motion.div>
               )}
             </motion.div>
@@ -377,38 +317,73 @@ export default function Home() {
   );
 }
 
-// ── Sem1 metrics ──────────────────────────────────────────────────────────────
-function Sem1Metrics({ data }: { data: StudentResult[] }) {
-  const totalCredits = data.reduce((acc, curr) => acc + (Number(curr.credits) || 0), 0);
-  const dueSubjects = data.filter(
-    item => item.status !== "Pass" && item.status !== "P" && item.status !== ""
-  ).length;
-  const cgpa = data[0]?.cgpa || "N/A";
+// ── Unified metrics ───────────────────────────────────────────────────────────
+type GradeSummaryRow = {
+  credits: string;
+  gradePoints?: string | null;
+  status?: string | null;
+};
+
+function UnifiedMetrics({
+  sem1Data,
+  sem2Data,
+}: {
+  sem1Data: StudentResult[] | null;
+  sem2Data: Sem2Result[] | null;
+}) {
+  const sem1Summary = getGradeSummary(sem1Data ?? []);
+  const sem2Summary = getGradeSummary(sem2Data ?? []);
+  const overallSummary = getGradeSummary([
+    ...(sem1Data ?? []),
+    ...(sem2Data ?? []),
+  ]);
+  const dueSubjects = countDueSubjects([
+    ...(sem1Data ?? []),
+    ...(sem2Data ?? []),
+  ]);
 
   return (
-    <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
-      <MetricCard color="emerald" label="CGPA" value={cgpa} />
-      <MetricCard color="blue" label="Credits" value={totalCredits.toString()} />
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 md:gap-4 mb-6">
+      <MetricCard color="emerald" label="CGPA" value={formatGradeValue(overallSummary)} />
+      <MetricCard color="blue" label="SEM I" value={formatGradeValue(sem1Summary)} />
+      <MetricCard color="amber" label="SEM II" value={formatGradeValue(sem2Summary)} />
       <MetricCard color={dueSubjects > 0 ? "red" : "slate"} label="Due" value={dueSubjects.toString()} />
     </div>
   );
 }
 
-// ── Sem2 metrics ──────────────────────────────────────────────────────────────
-function Sem2Metrics({ data }: { data: Sem2Result[] }) {
-  const totalCredits = data.reduce((acc, curr) => acc + (Number(curr.credits) || 0), 0);
-  const avgMid =
-    data.length > 0
-      ? (data.reduce((a, c) => a + (parseFloat(c.midTotal) || 0), 0) / data.length).toFixed(1)
-      : "—";
+function getGradeSummary(data: GradeSummaryRow[]) {
+  return data.reduce(
+    (acc, curr) => {
+      if (!curr.gradePoints?.trim()) return acc;
 
-  return (
-    <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
-      <MetricCard color="amber" label="Credits" value={totalCredits.toString()} />
-      <MetricCard color="amber" label="Avg Mid" value={avgMid} />
-      <MetricCard color="slate" label="Subjects" value={data.length.toString()} />
-    </div>
+      const gradePoints = Number(curr.gradePoints);
+      const credits = Number(curr.credits);
+
+      if (!Number.isFinite(gradePoints) || !Number.isFinite(credits) || credits <= 0) {
+        return acc;
+      }
+
+      return {
+        points: acc.points + gradePoints * credits,
+        credits: acc.credits + credits,
+      };
+    },
+    { points: 0, credits: 0 }
   );
+}
+
+function formatGradeValue(summary: { points: number; credits: number }) {
+  return summary.credits > 0 ? (summary.points / summary.credits).toFixed(2) : "—";
+}
+
+function countDueSubjects(data: GradeSummaryRow[]) {
+  return data.filter(item => item.status?.trim() && !isPassingStatus(item.status)).length;
+}
+
+function isPassingStatus(status: string | null | undefined) {
+  const normalized = status?.trim().toLowerCase();
+  return normalized === "pass" || normalized === "p";
 }
 
 // ── Generic metric card ───────────────────────────────────────────────────────
