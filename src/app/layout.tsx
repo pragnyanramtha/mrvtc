@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   description: "exam stats of sem 2",
 };
 
+// Attendance server actions may probe up to 8 sections + fetch 15 days, so give
+// the route room beyond Vercel's default 15s. Applies to the whole app segment.
+export const maxDuration = 60;
+
 export default function RootLayout({
   children,
 }: Readonly<{
