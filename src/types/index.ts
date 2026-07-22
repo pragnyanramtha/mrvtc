@@ -57,6 +57,47 @@ export interface Sem2Result {
     total: string;
 }
 
+export interface AttendanceRow {
+    rollNo: string;
+    name: string;
+    attended: number;
+    held: number;
+    percent: number;
+}
+
+export interface AttendanceSemester {
+    id: "I" | "II" | "III";
+    label: string;
+    from: string;
+    to: string;
+    attended: number;
+    held: number;
+    percent: number;
+}
+
+export interface AttendanceResult {
+    rollNo: string;
+    name: string;
+    branch: string;
+    section: string;
+    semesters: AttendanceSemester[];
+}
+
+export type DayStatus = "present" | "partial" | "absent" | "holiday" | "unknown";
+
+export interface AttendanceDay {
+    date: string; // YYYY-MM-DD
+    status: DayStatus;
+    present: number;
+    absent: number;
+    total: number;
+}
+
+export interface AttendanceStreak {
+    rollNo: string;
+    days: AttendanceDay[];
+}
+
 export type SemesterData = Record<string, StudentResult[]>;
 
 export interface ApiResponse {

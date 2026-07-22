@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "src/actions/get-attendance.ts": {
+      "maxDuration": 60
+    }
+  }
+}
