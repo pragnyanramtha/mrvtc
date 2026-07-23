@@ -2,8 +2,17 @@
 // API returns) back into structured rows. Uses pdfjs-dist's legacy Node build so
 // it runs on serverless (no native deps, no worker, no `pdftotext` binary).
 
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { resolve } from "node:path";
 import type { AttendanceRow } from "@/types";
+
+// Force pdfjs to use the vendored worker copy so the dynamic import() inside
+// pdfjs-dist resolves against a real file on Vercel's serverless filesystem
+// instead of chasing pnpm symlinks.
+GlobalWorkerOptions.workerSrc = resolve(
+    process.cwd(),
+    "src/vendor/pdf.worker.mjs",
+);
 
 // Roll number may appear as its own cell OR glued to the name in a single cell
 // (e.g. "25MVCSDR0271 A MANISH YADAV"), depending on the PDF's layout that day.
