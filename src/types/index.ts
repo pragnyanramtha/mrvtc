@@ -57,6 +57,15 @@ export interface Sem2Result {
     total: string;
 }
 
+export interface Sem3Result {
+    rollNo: string;
+    courseCode: string;
+    courseName: string;
+    subjectType: string;
+    mid1Marks: string;
+    status: string | null;
+}
+
 export interface AttendanceRow {
     rollNo: string;
     name: string;

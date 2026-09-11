@@ -3,15 +3,18 @@
 import { useState, useTransition } from "react";
 import { getSemWiseData } from "@/actions/get-sem-wise-data";
 import { getSem2Data } from "@/actions/get-sem2-data";
-import { StudentResult, Sem2Result } from "@/types";
+import { getSem3Data } from "@/actions/get-sem3-data";
+import { StudentResult, Sem2Result, Sem3Result } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import StatsGrid from "@/components/stats-grid";
 import Sem2StatsGrid from "@/components/sem2-stats-grid";
+import Sem3StatsGrid from "@/components/sem3-stats-grid";
 import StudentSearch from "@/components/student-search";
 
 export default function MarksView() {
     const [sem1Data, setSem1Data] = useState<StudentResult[] | null>(null);
     const [sem2Data, setSem2Data] = useState<Sem2Result[] | null>(null);
+    const [sem3Data, setSem3Data] = useState<Sem3Result[] | null>(null);
     const [displayName, setDisplayName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
@@ -20,12 +23,14 @@ export default function MarksView() {
         setError(null);
         setSem1Data(null);
         setSem2Data(null);
+        setSem3Data(null);
         setDisplayName(name ?? null);
 
         startTransition(async () => {
-            const [sem1Result, sem2Result] = await Promise.all([
+            const [sem1Result, sem2Result, sem3Result] = await Promise.all([
                 getSemWiseData(rollNo),
                 getSem2Data(rollNo),
+                getSem3Data(rollNo),
             ]);
 
             if (sem1Result.success && sem1Result.data) {
@@ -38,14 +43,18 @@ export default function MarksView() {
                 setSem2Data(sem2Result.data);
             }
 
-            if (!sem1Result.success && !sem2Result.success) {
+            if (sem3Result.success && sem3Result.data) {
+                setSem3Data(sem3Result.data);
+            }
+
+            if (!sem1Result.success && !sem2Result.success && !sem3Result.success) {
                 setError(sem1Result.error || "No data found.");
             }
         });
     };
 
-    const hasData = sem1Data || sem2Data;
-    const currentRollNo = sem1Data?.[0]?.rollNo ?? sem2Data?.[0]?.rollNo ?? "";
+    const hasData = sem1Data || sem2Data || sem3Data;
+    const currentRollNo = sem1Data?.[0]?.rollNo ?? sem2Data?.[0]?.rollNo ?? sem3Data?.[0]?.rollNo ?? "";
 
     return (
         <div className="w-full flex flex-col items-center">
@@ -86,13 +95,31 @@ export default function MarksView() {
                                         {currentRollNo}
                                     </h2>
                                 </div>
-                                <span className="bg-cyan-950/30 border border-cyan-500/30 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs uppercase tracking-wider whitespace-nowrap">
-                                    Batch: 2025
-                                </span>
+                                <div className="flex flex-row flex-wrap gap-2">
+                                    <span className="bg-cyan-950/30 border border-cyan-500/30 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs uppercase tracking-wider whitespace-nowrap">
+                                        Batch: 2025
+                                    </span>
+                                    {sem3Data && (
+                                        <span className="bg-fuchsia-950/30 border border-fuchsia-500/30 px-3 py-1 rounded-full text-fuchsia-400 font-mono text-xs uppercase tracking-wider whitespace-nowrap">
+                                            Sem III Active
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <UnifiedMetrics sem1Data={sem1Data} sem2Data={sem2Data} />
                         </motion.div>
+
+                        {sem3Data && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+                                    <h3 className="text-fuchsia-400 font-mono uppercase tracking-widest text-xs border-b border-fuchsia-900/30 pb-2 flex-1">
+                                        Sem III — Mid I Marks
+                                    </h3>
+                                </div>
+                                <Sem3StatsGrid data={sem3Data} />
+                            </motion.div>
+                        )}
 
                         {sem2Data && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full">
