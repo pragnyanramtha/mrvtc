@@ -111,7 +111,7 @@ export default function MarksView() {
                         </motion.div>
 
                         {sem3Data && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full mb-10 md:mb-12">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
                                     <h3 className="text-fuchsia-400 font-mono uppercase tracking-widest text-xs border-b border-fuchsia-900/30 pb-2 flex-1">
                                         Sem III — Mid I Marks

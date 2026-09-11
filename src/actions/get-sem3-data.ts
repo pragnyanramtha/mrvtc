@@ -37,15 +37,20 @@ export async function getSem3Data(rollNo: string) {
             return { success: false, error: 'No Sem 3 data found for this roll number.' };
         }
 
-        const mappedData: Sem3Result[] = rows.map(row => ({
+        const mappedData: Sem3Result[] = rows.map(row => {
+            const studentSplitups = splitupByStudent[row.rollNo.trim().toUpperCase()];
+            const courseCode = row.courseCode?.trim().toUpperCase();
+
+            return {
             rollNo: row.rollNo,
             courseCode: row.courseCode,
             courseName: row.courseName,
             subjectType: toText(row.subjectType),
             mid1Marks: toText(row.mid1Marks, '0'),
             status: row.status || null,
-            splitup: splitupByStudent[row.rollNo.toUpperCase()]?.[row.courseCode],
-        }));
+                splitup: courseCode ? studentSplitups?.[courseCode] : undefined,
+            };
+        });
 
         return { success: true, data: mappedData };
     } catch (error: unknown) {
