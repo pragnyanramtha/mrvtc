@@ -3,9 +3,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { Sem3Result } from '@/types';
-import splitups from '@/data/sem3-mid1-splitups.json';
-
-const splitupByStudent = splitups as Record<string, Record<string, Record<string, number>>>;
 
 type DbValue = number | string | null | undefined;
 
@@ -32,13 +29,14 @@ export async function getSem3Data(rollNo: string) {
         
         const stmt = db.prepare(`SELECT * FROM sem3_marks WHERE rollNo = ?`);
         const rows = stmt.all(rollNo.toUpperCase()) as Sem3MarksRow[];
+        const splitupRows = db.prepare(`SELECT courseCode, splitupJson FROM sem3_splitups WHERE rollNo = ?`).all(rollNo.toUpperCase()) as Array<{ courseCode: string; splitupJson: string }>;
+        const splitupByCourse = new Map(splitupRows.map(row => [row.courseCode.trim().toUpperCase(), JSON.parse(row.splitupJson) as Record<string, number | string>]));
         
         if (!rows || rows.length === 0) {
             return { success: false, error: 'No Sem 3 data found for this roll number.' };
         }
 
         const mappedData: Sem3Result[] = rows.map(row => {
-            const studentSplitups = splitupByStudent[row.rollNo.trim().toUpperCase()];
             const courseCode = row.courseCode?.trim().toUpperCase();
 
             return {
@@ -48,7 +46,7 @@ export async function getSem3Data(rollNo: string) {
             subjectType: toText(row.subjectType),
             mid1Marks: toText(row.mid1Marks, '0'),
             status: row.status || null,
-                splitup: courseCode ? studentSplitups?.[courseCode] : undefined,
+                splitup: courseCode ? splitupByCourse.get(courseCode) : undefined,
             };
         });
 
