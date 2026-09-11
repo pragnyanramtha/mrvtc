@@ -64,6 +64,7 @@ export interface Sem3Result {
     subjectType: string;
     mid1Marks: string;
     status: string | null;
+    splitup?: Record<string, number>;
 }
 
 export interface AttendanceRow {

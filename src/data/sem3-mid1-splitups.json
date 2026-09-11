@@ -1,0 +1,54 @@
+{
+  "25MVCSDR0001": {
+    "DS25427301": {
+      "Assignment & Presentation": 14,
+      "Assignment": 10,
+      "Objective": 8,
+      "Subject": 21
+    },
+    "DS25427302": {
+      "Assignment & Presentation": 14,
+      "Assignment": 10,
+      "Objective": 10,
+      "Subject": 21
+    },
+    "DS25427303": {
+      "Assignment & Presentation": 10,
+      "Assignment": 10,
+      "Objective": 6,
+      "Subject": 15
+    },
+    "DS25427304": {
+      "Assignment & Presentation": 15,
+      "Assignment": 10,
+      "Objective": 9,
+      "Subject": 24
+    },
+    "DS25427305": {
+      "Assignment & Presentation": 12,
+      "Assignment": 10,
+      "Objective": 10,
+      "Subject": 16
+    },
+    "DS25427306": {
+      "Assignment & Presentation": 15,
+      "Assignment": 10,
+      "Objective": 9,
+      "Subject": 15
+    },
+    "DS25427302P": {
+      "Day-to-Day": 12,
+      "Internal": 10,
+      "Lab Project": 7,
+      "Presentation": 10,
+      "Viva": 7
+    },
+    "DS25427307P": {
+      "Day-to-Day": 15,
+      "Internal": 8,
+      "Lab Project": 5,
+      "Presentation": 10,
+      "Viva": 5
+    }
+  }
+}

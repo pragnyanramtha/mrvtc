@@ -101,9 +101,25 @@ export default function Sem3StatsGrid({ data }: Sem3StatsGridProps) {
                         </div>
                     </div>
 
+                    {result.splitup && (
+                        <div className="relative z-10 mt-3 rounded border border-fuchsia-500/10 bg-fuchsia-950/10 p-3">
+                            <div className="mb-2 text-[10px] font-mono uppercase tracking-widest text-fuchsia-400/70">
+                                Mid I split-up
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {Object.entries(result.splitup).map(([label, value]) => (
+                                    <div key={label} className="flex items-center justify-between gap-2 text-xs">
+                                        <span className="text-slate-400">{label}</span>
+                                        <span className="font-mono font-bold text-slate-200">{formatMark(String(value))}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Footer */}
                     <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center relative z-10">
-                        <span className="text-xs text-slate-600 font-mono">III SEM · MID I ONLY</span>
+                        <span className="text-xs text-slate-600 font-mono">III SEM · MID I</span>
                         <span className="text-xs text-slate-600 font-mono uppercase tracking-wider">
                             {formatMark(result.mid1Marks)} / 60
                         </span>

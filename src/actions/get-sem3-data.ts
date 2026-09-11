@@ -3,6 +3,9 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { Sem3Result } from '@/types';
+import splitups from '@/data/sem3-mid1-splitups.json';
+
+const splitupByStudent = splitups as Record<string, Record<string, Record<string, number>>>;
 
 type DbValue = number | string | null | undefined;
 
@@ -20,11 +23,6 @@ function toText(value: DbValue, fallback = '') {
     if (value == null) return fallback;
     const text = String(value).trim();
     return text || fallback;
-}
-
-function toNullableText(value: DbValue) {
-    const text = toText(value);
-    return text || null;
 }
 
 export async function getSem3Data(rollNo: string) {
@@ -46,6 +44,7 @@ export async function getSem3Data(rollNo: string) {
             subjectType: toText(row.subjectType),
             mid1Marks: toText(row.mid1Marks, '0'),
             status: row.status || null,
+            splitup: splitupByStudent[row.rollNo.toUpperCase()]?.[row.courseCode],
         }));
 
         return { success: true, data: mappedData };
